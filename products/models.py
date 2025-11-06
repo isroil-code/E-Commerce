@@ -16,7 +16,7 @@ class Category(models.Model):
         ('business', 'Business'),
     ]
     
-    name = models.CharField(max_length=200, choices=CATEGORY_CHOICES)
+    name = models.CharField(max_length=200, choices=CATEGORY_CHOICES, default='All')
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):

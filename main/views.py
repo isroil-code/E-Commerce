@@ -26,13 +26,12 @@ class IndexView(View):
 class HomeView(LoginRequiredMixin,View):
     def get(self, req):
         model = Product.objects.all()
-        category = SearchForm()
-        return render(req, 'main/home.html',{'products':model, 'search':category})
-    
-    def post(self, req):
-        category = SearchForm(req.POST)
-        model = Product.objects.filter(category=category)
-        return model
+        form = SearchForm(req.GET or None)
+        if form.is_valid():
+            category = form.cleaned_data.get('name')
+            if category:
+                model = model.filter(category=category)
+        return render(req, 'main/home.html',{'products':model, 'search':form})
     
 class ProductDetailView(LoginRequiredMixin,View):
     def get(self, req, pk):
