@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{search}}
+    <button>Filter</button>
+</form>
+<h1>Welcome to the home Page</h1>
+<ol>
+{% for p in products %}
+    <li>
+        {% for c in p.image.all %}
+        <img src="{{c.image.url}}" alt="#image" style="width: 140px; height: 120px;">
+        {% endfor %}
+        <p>name: {{p.name}}</p>
+       
+        <p>price: {{p.price}}$</p>
+        <p>rating: {{p.stars}}</p>
+        <a href="">Buy</a>
+        <br>
+        <a href="{% url 'addtocart' p.pk %}">Add to my cart</a>
+        <br>
+        <a href="{% url 'product-detail' p.pk %}">More Info</a>
+        <br>
+        <a href="{% url 'review' p.pk %}">Write a review</a>
+    </li>
+{% endfor %}
+</ol>
+{% endblock content %}
+

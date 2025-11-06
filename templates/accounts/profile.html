@@ -1,0 +1,31 @@
+{% extends 'base.html' %} {% block title %}
+<title>Edit Profile</title>
+{% endblock title %} {% block content %}
+<h1>Profile</h1>
+<main
+  class="container"
+  style="
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+      'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  "
+>
+  {% if profile.image%}
+  <img
+    src="{{profile.image.url}}"
+    alt="#image"
+    style="height: 200px; width: 100px; border-radius: 5px"
+  />
+  {% endif %}
+  <h5>Username: {{user.username}}</h5>
+  <h5>Email: {{user.email}}</h5>
+  <p>Phone: {{profile.phone}}</p>
+  {% for a in profile.address.all %}
+  <p>Country: {{a.country}}</p>
+  <p>region: {{a.region}}</p>
+  <p>City: {{a.city}}</p>
+  <p>Address: {{a.address}}</p>
+  {% endfor %}
+
+  <a href="{% url 'edit-profile' %}">Tahrirlash</a>
+</main>
+{% endblock content %}

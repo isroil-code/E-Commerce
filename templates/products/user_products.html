@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %} 
+<title>My Products</title>
+{% endblock title %} 
+
+{% block content %}
+<h1>My Products</h1>
+{% for p in product.items.all %}
+<ol>
+    <li>
+        {% for c in p.product.image.all %}
+        <img src="{{c.image.url}}" alt="#image" style="width: 140px; height: 120px;">
+        {% endfor %}
+        <p>name: {{p.product.name}}</p>
+       
+        <p>price: {{p.product.price}}$</p>
+        <p>rating: {{p.product.rate}}</p>
+        <form method="post">
+            {% csrf_token %}
+            <p>quantity: {{form.as_p}}</p>
+            <button>Save quantity</button>
+        </form>
+        <a href="">Buy</a>
+        <br>
+        
+        <a href="{% url 'product-detail' p.pk %}">More Info</a>
+        
+        <a href="{% url 'product_delete' p.pk %}">Delete from cart</a>
+    </li>
+{% endfor %}
+</ol>
+{% endblock content %}
+
+
+
+

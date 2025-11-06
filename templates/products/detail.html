@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %} 
+<title>Product Detail</title>
+{% endblock title %} 
+
+{% block content %}
+<main class="container">
+<h1>More Detail</h1>
+<ul>
+    <li>
+        {{item.name}}
+        <br>
+        {{item.bio}}
+    </li>
+</ul>
+<h1>Comments</h1>
+<ol>
+{% for c in comments.all %}
+    <li>
+    <h5>User: <a href="{% url 'profile' %}">{{c}}</a></h5>
+    <h6>comment:</h6>
+    <p>{{c.text}}</p>
+    
+    </li>
+{% endfor %}
+</ol>
+</main>
+{% endblock content %}
+
+
