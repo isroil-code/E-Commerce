@@ -9,20 +9,16 @@
 
 <ol>
 {% for p in product.items.all %}
-
     <li>
         {% for c in p.product.image.all %}
         <img src="{{c.image.url}}" alt="#image" style="width: 140px; height: 120px;">
         {% endfor %}
         <p>name: {{p.product.name}}</p>
-       
         <p>price: {{p.product.price}}$</p>
         <p>rating: {{p.product.stars}}</p>
         <a href="">Buy</a>
         <br>
-        
         <a href="{% url 'product-detail' p.pk %}">More Info</a>
-        
         <a href="{% url 'product_delete' p.pk %}">Delete from cart</a>
     </li>
 {% endfor %}

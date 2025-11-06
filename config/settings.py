@@ -4,11 +4,19 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-km4059xz5_m)jrbi*pgqg=hw!mgf1yw-t=mh73icqm^zvz3nfp'
+# Keep a sane default for local development but allow overriding via env var in Docker/production
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    'django-insecure-km4059xz5_m)jrbi*pgqg=hw!mgf1yw-t=mh73icqm^zvz3nfp'
+)
 
-DEBUG = True
+# DEBUG should be explicitly set via env (1/true/yes -> True). Default to False in containers.
+_DEBUG_ENV = os.environ.get("DEBUG", "0")
+DEBUG = _DEBUG_ENV in ("1", "true", "True", "yes")
 
-ALLOWED_HOSTS = ["*"]
+# Hosts allowed (comma-separated in DJANGO_ALLOWED_HOSTS). Default to localhost for dev.
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -56,13 +64,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -79,18 +80,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.{}'.format(
-             os.getenv('DATABASE_ENGINE', 'sqlite3')
-         ),
-         'NAME': os.getenv('DATABASE_NAME', 'polls'),
-         'USER': os.getenv('DATABASE_USERNAME', 'myprojectuser'),
-         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'password'),
-         'HOST': os.getenv('DATABASE_HOST', '127.0.0.1'),
-         'PORT': os.getenv('DATABASE_PORT', 5432),
+# DATABASE configuration: use sqlite3 by default, but allow switching via env vars (e.g. postgres)
+DATABASE_ENGINE = os.getenv('DATABASE_ENGINE', 'sqlite3')
+if DATABASE_ENGINE == 'sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # Expected DATABASE_ENGINE values: 'postgresql', 'mysql', etc.
+    DATABASES = {
+        'default': {
+            'ENGINE': f"django.db.backends.{DATABASE_ENGINE}",
+            'NAME': os.getenv('DATABASE_NAME', 'savdo'),
+            'USER': os.getenv('DATABASE_USERNAME', 'postgres'),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
+            'HOST': os.getenv('DATABASE_HOST', '127.0.0.1'),
+            'PORT': os.getenv('DATABASE_PORT', '5432'),
+        }
+    }
 
 
 LANGUAGE_CODE = 'en-us'
@@ -105,6 +115,8 @@ USE_TZ = True
 
 
 STATIC_URL = 'static/'
+# Where `collectstatic` will collect files for production/static serving
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 LOGIN_URL = 'login'
@@ -114,8 +126,5 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 MEDIA_URL = '/media/'
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

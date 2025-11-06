@@ -1,10 +1,36 @@
 version: '3.9'
 
 services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: savdo
+      POSTGRES_USER: savdo
+      POSTGRES_PASSWORD: savdo_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   web:
-    build: .
-    command: python manage.py runserver 127.0.0.1:8000
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Use gunicorn by default (Dockerfile). For local development uncomment runserver below.
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
     volumes:
       - .:/app
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_ENGINE=postgresql
+      - DATABASE_NAME=savdo
+      - DATABASE_USERNAME=savdo
+      - DATABASE_PASSWORD=savdo_pass
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - SECRET_KEY=change-me-in-prod
+      - DEBUG=0
+
+volumes:
+  postgres_data:
