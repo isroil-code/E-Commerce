@@ -32,7 +32,7 @@ class LoginView(View):
         if user:
             login(req, user)
             return redirect('home')
-        return redirect(req, 'accounts/login.html')
+        return render(req, 'accounts/login.html')
     
 class LogoutView(LoginRequiredMixin,View):
   

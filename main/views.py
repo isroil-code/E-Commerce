@@ -41,22 +41,10 @@ class ProductDetailView(LoginRequiredMixin,View):
         
 class UserProducts(LoginRequiredMixin, View):
     def get(self, req):
-        cart = Cart.objects.get(user=req.user)
-        form = None
-        try:
-            product = Cart.objects.get(user=req.user)
-            cartItem = CartItem.objects.get(cart=cart)
-            form = ProductQuantityForm(instance=cartItem)
-            
-        except:
-            product = "Savatcha mavjud emas!!!"
-        return render(req, 'products/user_products.html', {'product':product, 'form':form})
-    def post(self, req):
-        cart = Cart.objects.get(user=req.user)
-        cartItem = CartItem.objects.get(cart=cart)
-        form = ProductQuantityForm(req.POST,instance=cartItem)
-        if form.is_valid():
-            form.save()
-            return redirect('user-products')    
+        product = Cart.objects.get(user=req.user)
+        
+        
+        return render(req, 'products/user_products.html', {'product':product})
+     
         
 
