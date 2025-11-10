@@ -27,11 +27,16 @@ class HomeView(LoginRequiredMixin,View):
     def get(self, req):
         model = Product.objects.all()
         form = SearchForm(req.GET or None)
+        search = req.GET.get('q', '')
         if form.is_valid():
             category = form.cleaned_data.get('name')
             if category:
                 model = model.filter(category=category)
+        if search:
+            model = model.filter(name__icontains=search)
         return render(req, 'main/home.html',{'products':model, 'search':form})
+    
+
     
 class ProductDetailView(LoginRequiredMixin,View):
     def get(self, req, pk):
